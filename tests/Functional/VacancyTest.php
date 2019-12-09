@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: alex
- * Date: 01.12.2019
- * Time: 20:02
- */
 
 namespace App\Tests\Functional;
 
@@ -13,18 +7,14 @@ use App\Entity\Vacancy;
 
 class VacancyTest extends ApiTestCase
 {
-
-    /**
-     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
-     */
     public function testCreateVacancy()
     {
         $client = self::createClient();
         $client->request('POST', '/api/vacancies', [
             'headers' => ['Content-Type' => 'application/json'],
             'json' => [
-                "name"=> "TEST",
-                "description"=>  "TEST",
+                "name"=> "test create",
+                "description"=>  "description test create",
                 "isPublished"=>  true,
             ]
         ]);
@@ -32,41 +22,49 @@ class VacancyTest extends ApiTestCase
     }
 
     /**
-     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     * @throws \Exception
      */
     public function testUpdateVacancy()
     {
-        /*
-        $vacancy = new Vacancy();
-        $vacancy->setName('testName');
-        $vacancy->setDescription('testDescription');
-        $vacancy->setIsPublished(true);
-
-
-        $em = self::$container->get('doctrine')->getManager();
-        $this->$em->persist($vacancy);
-        $this->$em->flush();*/
 
         $client = self::createClient();
-        $client->request('PUT', '/api/vacancies/2', [
+        $em = self::$container->get('doctrine')->getManager();
+
+        $vacancy = new Vacancy();
+        $vacancy->setName('test update');
+        $vacancy->setDescription('description test update');
+        $vacancy->setIsPublished(true);
+
+        $em->persist($vacancy);
+        $em->flush();
+
+        $client->request('PUT', '/api/vacancies/'.$vacancy->getId(), [
             'json' => ['name' => 'update']
         ]);
         $this->assertResponseStatusCodeSame(200);
     }
 
     /**
-     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     * @throws \Exception
      */
     public function testDeleteVacancy()
     {
         $client = self::createClient();
-        $client->request('DELETE', '/api/vacancies/1');
+        $em = self::$container->get('doctrine')->getManager();
+
+        $vacancy = new Vacancy();
+        $vacancy->setName('test delete');
+        $vacancy->setDescription('description test delete');
+        $vacancy->setIsPublished(true);
+
+        $em->persist($vacancy);
+        $em->flush();
+
+        $client->request('DELETE', '/api/vacancies/'.$vacancy->getId());
         $this->assertResponseStatusCodeSame(204);
     }
 
-    /**
-     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
-     */
+
     public function testGetAllVacancy()
     {
         $client = self::createClient();
@@ -75,12 +73,22 @@ class VacancyTest extends ApiTestCase
     }
 
     /**
-     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     * @throws \Exception
      */
     public function testGetVacancy()
     {
         $client = self::createClient();
-        $client->request('GET', '/api/vacancies/2');
+        $em = self::$container->get('doctrine')->getManager();
+
+        $vacancy = new Vacancy();
+        $vacancy->setName('test get one');
+        $vacancy->setDescription('description test get one');
+        $vacancy->setIsPublished(true);
+
+        $em->persist($vacancy);
+        $em->flush();
+
+        $client->request('GET', '/api/vacancies/'.$vacancy->getId());
         $this->assertResponseStatusCodeSame(200);
     }
 }
